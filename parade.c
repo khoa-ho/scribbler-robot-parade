@@ -26,7 +26,7 @@ void quit(FILE *fp, FILE *log) {
   rDisconnect();
   eSpeakDisconnect();
   fclose(fp);
-  if(log) { fclose(log); }
+  if (log) { fclose(log); }
 }
 
 void rDitty(void){
@@ -45,17 +45,17 @@ char *rmChar(char *str) {
   return str;
 }
 
-void logit(FILE *fp, char *arg){
+void logIt(FILE *fp, char *arg) {
   time_t curtime;
   int left, right, mid, avg;
 
-  if(fp) {
+  if (fp) {
     left = rGetLightTxt("left", 3);
     mid = rGetLightTxt("middle", 3);
     right = rGetLightTxt("right", 3);
     avg = (left + right + mid) / 3;
     time(&curtime);
-    fprintf(fp, "%s  %s (%d, %d, %d)\n", rmChar(ctime(&curtime)), arg, left, right, avg);
+    fprintf(fp, "%s %s (%d, %d, %d)\n", rmChar(ctime(&curtime)), arg, left, right, avg);
   }
 }
 
@@ -63,7 +63,6 @@ void logit(FILE *fp, char *arg){
 bool isCmd(char str[], char cmd[]) {
   return (strncmp(str, cmd, strlen(cmd)) == 0);
 }
-
 
 //===================================================================
 bool isType(char *str, char type) {
@@ -95,6 +94,7 @@ bool isType(char *str, char type) {
 }
 
 int main(int argc, char **argv) {
+  // Open files
   FILE *fp, *log = NULL;
   
   if (isCmd(argv[1], "-log")) {
@@ -125,8 +125,8 @@ int main(int argc, char **argv) {
 
   // Step 5
   char *token;
-  char buf[MAX_LINE];
   char *tokens[3];
+  char buf[MAX_LINE];
   
   while (fgets(buf, sizeof(buf), fp) != NULL) {
     token = strtok(buf, " ");
@@ -139,7 +139,7 @@ int main(int argc, char **argv) {
     if (isCmd(tokens[0], "forward")) {
       if(isType(tokens[1], 'f')){
         rForward(1.0, atof(tokens[1]));
-        logit(log, tokens[0]);
+        logIt(log, tokens[0]);
       } else {
         quit(fp, log);
         return 0;
@@ -148,10 +148,10 @@ int main(int argc, char **argv) {
       if(isType(tokens[1], 'd')){
         if(isCmd(tokens[2], "left")) {
           rTurnLeft(1.0, atof(tokens[1]) / 45);
-          logit(log, tokens[0]);
+          logIt(log, tokens[0]);
         } else if(isCmd(tokens[2], "right")) {
           rTurnRight(1.0, atof(tokens[1]) / 45);
-          logit(log, tokens[0]);
+          logIt(log, tokens[0]);
         } else {
           printf("Not given correct direction\n");
           quit(fp, log);
@@ -164,10 +164,10 @@ int main(int argc, char **argv) {
     } else if (isCmd(tokens[0], "spin")) {
       if(isCmd(tokens[1], "left")) {
         rTurnLeft(1.0, 4.0);
-        logit(log, tokens[0]);
+        logIt(log, tokens[0]);
       } else if(isCmd(tokens[1], "right")) {
         rTurnRight(1.0, 4.0);
-        logit(log, tokens[0]);
+        logIt(log, tokens[0]);
       } else {
         printf("Not given correct direction\n");
         quit(fp, log);
@@ -175,13 +175,13 @@ int main(int argc, char **argv) {
       }
     } else if (isCmd(tokens[0], "beep")) {
       rBeep(1.0, 698);
-      logit(log, tokens[0]);
+      logIt(log, tokens[0]);
     } else if (isCmd(tokens[0], "ditty")) {
       rDitty();
-      logit(log, tokens[0]);
+      logIt(log, tokens[0]);
     } else if (isCmd(tokens[0], "song")) {
       rSong();
-      logit(log, tokens[0]);
+      logIt(log, tokens[0]);
     } else {
       printf("Invalid command\n");
       quit(fp, log);
@@ -198,4 +198,3 @@ int main(int argc, char **argv) {
   
   return 0;
 }
-  
