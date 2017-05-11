@@ -8,11 +8,31 @@
 #include <time.h>
 #include <eSpeakPackage.h>
 
-#define MAX_LINE 100
+
+// ============================================================================
+/** Defines input string length */
 #define STR_LEN 20
 
-//===================================================================
-//Helper functions
+#define MAX_LINE 100
+
+/** Defines musical notes */
+#define B6 1975.53
+#define G6 1567.98
+#define C7 2093.00
+#define D7flat 2217.46
+#define D7 2349.32
+#define E7 2637.02
+#define REST 1.0
+
+/** Defines note lengths */
+#define BEATS_PER_MIN (600)
+#define SECONDS_PER_BEAT (60.0/BEATS_PER_MIN)
+double dur1() {return SECONDS_PER_BEAT / 2.0;}
+double dur4() {return SECONDS_PER_BEAT / 2.0;}
+double dur8() {return SECONDS_PER_BEAT * 4.0;}
+
+// ============================================================================
+// Helper functions
 /** Initializes eSpeak and connects the robot */
 void initializeRobot(void) {
   rConnect("/dev/rfcomm0");
@@ -22,19 +42,59 @@ void initializeRobot(void) {
 
 /** Cleans up scribbler, eSpeak, and closes file */
 void quit(FILE *fp, FILE *log) {
-  rStop();
+   rStop();
   rDisconnect();
   eSpeakDisconnect();
   fclose(fp);
   if (log) { fclose(log); }
 }
 
+/** Plays a tune for 1 second */ 
 void rDitty(void){
-
+  rBeep (dur8(), D7flat);
+  rBeep (dur8(), G6);
+  rBeep (dur4(), C7);
 }
 
+/** Plays a tune for 3 seconds */
 void rSong(void){
-
+  rBeep (dur1(), G6);
+  rBeep (dur1(), G6);
+  rBeep (dur1(), B6);
+  rBeep (dur1(), G6);
+  rBeep (dur1(), G6);
+  rBeep (dur1(), C7);
+  rBeep (dur1(), G6);
+  rBeep (dur1(), G6);
+  rBeep (dur1(), D7flat);
+  rBeep (dur1(), G6);
+  rBeep (dur1(), G6);
+  rBeep (dur1(), D7);
+  rBeep (dur1(), E7);
+  rBeep (dur1(), G6);
+  rBeep (dur1(), D7);
+  rBeep (dur1(), G6);
+  rBeep (dur1(), G6);
+  rBeep (dur1(), B6);
+  rBeep (dur1(), G6);
+  rBeep (dur1(), G6);
+  rBeep (dur8(), REST); 
+  rBeep (dur1(), G6);
+  rBeep (dur1(), G6);
+  rBeep (dur1(), B6);
+  rBeep (dur1(), G6);
+  rBeep (dur1(), G6);
+  rBeep (dur1(), C7);
+  rBeep (dur8(), REST); 
+  rBeep (dur1(), G6);
+  rBeep (dur1(), G6);
+  rBeep (dur1(), B6);
+  rBeep (dur1(), G6);
+  rBeep (dur1(), G6);
+  rBeep (dur1(), C7);
+  rBeep (dur4(), G6);
+  rBeep (dur4(), D7flat);
+  rBeep (dur4(), G6);
 }
 
 /** Removes the last character in a string if it is a newline */
@@ -45,6 +105,7 @@ char *rmChar(char *str) {
   return str;
 }
 
+/** Logs the time, the command, and the values of IR sensors */
 void logIt(FILE *fp, char *arg) {
   time_t curtime;
   int left, right, mid, avg;
@@ -64,10 +125,10 @@ bool isCmd(char str[], char cmd[]) {
   return (strncmp(str, cmd, strlen(cmd)) == 0);
 }
 
-//===================================================================
+// ============================================================================
+/** Checks whether the input is of correct type */
 bool isType(char *str, char type) {
   int i = 0;
-  
   if (*str == '\0') {
     printf("No argument given. Enter a proper argument\n");
     return false;
@@ -93,9 +154,12 @@ bool isType(char *str, char type) {
   return true;
 }
 
+// ============================================================================
+// Main function
 int main(int argc, char **argv) {
   // Open files
   FILE *fp, *log = NULL;
+  char *token, *tokens[3], buf[MAX_LINE];
   
   if (isCmd(argv[1], "-log")) {
     log = fopen(argv[2], "w");
@@ -114,7 +178,7 @@ int main(int argc, char **argv) {
     
   // Step 1
   initializeRobot();
-
+  
   // Step 2, 3, 4
   printf("Press 'Enter' to start: ");
   while (getchar() != '\n') {}
@@ -124,9 +188,6 @@ int main(int argc, char **argv) {
   rStop();
 
   // Step 5
-  char *token;
-  char *tokens[3];
-  char buf[MAX_LINE];
   
   while (fgets(buf, sizeof(buf), fp) != NULL) {
     token = strtok(buf, " ");
@@ -147,10 +208,10 @@ int main(int argc, char **argv) {
     } else if (isCmd(tokens[0], "turn")) {
       if(isType(tokens[1], 'd')){
         if(isCmd(tokens[2], "left")) {
-          rTurnLeft(1.0, atof(tokens[1]) / 45);
+          rTurnLeft(1.0, atof(tokens[1]) * 2 / 225);
           logIt(log, tokens[0]);
         } else if(isCmd(tokens[2], "right")) {
-          rTurnRight(1.0, atof(tokens[1]) / 45);
+          rTurnRight(1.0, atof(tokens[1]) * 2 / 225);
           logIt(log, tokens[0]);
         } else {
           printf("Not given correct direction\n");
@@ -163,10 +224,10 @@ int main(int argc, char **argv) {
       }
     } else if (isCmd(tokens[0], "spin")) {
       if(isCmd(tokens[1], "left")) {
-        rTurnLeft(1.0, 4.0);
+        rTurnLeft(1.0, 3.2);
         logIt(log, tokens[0]);
       } else if(isCmd(tokens[1], "right")) {
-        rTurnRight(1.0, 4.0);
+        rTurnRight(1.0, 3.2);
         logIt(log, tokens[0]);
       } else {
         printf("Not given correct direction\n");
