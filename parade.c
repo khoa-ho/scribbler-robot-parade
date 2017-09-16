@@ -99,7 +99,7 @@ void rSong(void){
 
 /** Removes the last character in a string if it is a newline */
 char *rmChar(char *str) {
-  if(str[strlen(str) - 1] == '\n') {
+  if (str[strlen(str) - 1] == '\n') {
     str[strlen(str) - 1] = '\0';
   }
   return str;
@@ -164,13 +164,13 @@ int main(int argc, char **argv) {
   if (isCmd(argv[1], "-log")) {
     log = fopen(argv[2], "w");
     fp = fopen(argv[3],"r");
-    if(!fp) {
+    if (!fp) {
       perror("File opening failed");
       return EXIT_FAILURE;
     }
   } else {
     fp = fopen(argv[1],"r");
-    if(!fp) {
+    if (!fp) {
       perror("File opening failed");
       return EXIT_FAILURE;
     }
@@ -198,7 +198,7 @@ int main(int argc, char **argv) {
     }
     
     if (isCmd(tokens[0], "forward")) {
-      if(isType(tokens[1], 'f')){
+      if (isType(tokens[1], 'f')){
         rForward(1.0, atof(tokens[1]));
         logIt(log, tokens[0]);
       } else {
@@ -206,11 +206,11 @@ int main(int argc, char **argv) {
         return 0;
       }
     } else if (isCmd(tokens[0], "turn")) {
-      if(isType(tokens[1], 'd')){
-        if(isCmd(tokens[2], "left")) {
+      if (isType(tokens[1], 'd')){
+        if (isCmd(tokens[2], "left")) {
           rTurnLeft(1.0, atof(tokens[1]) * 2 / 225);
           logIt(log, tokens[0]);
-        } else if(isCmd(tokens[2], "right")) {
+        } else if (isCmd(tokens[2], "right")) {
           rTurnRight(1.0, atof(tokens[1]) * 2 / 225);
           logIt(log, tokens[0]);
         } else {
@@ -223,10 +223,10 @@ int main(int argc, char **argv) {
         return 0;
       }
     } else if (isCmd(tokens[0], "spin")) {
-      if(isCmd(tokens[1], "left")) {
+      if (isCmd(tokens[1], "left")) {
         rTurnLeft(1.0, 3.2);
         logIt(log, tokens[0]);
-      } else if(isCmd(tokens[1], "right")) {
+      } else if (isCmd(tokens[1], "right")) {
         rTurnRight(1.0, 3.2);
         logIt(log, tokens[0]);
       } else {
